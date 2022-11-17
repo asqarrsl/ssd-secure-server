@@ -41,5 +41,5 @@ app.use('/admin', require('./routes/admin.route'));
 app.use('/file', require('./routes/file.route'));
 
 app.get('/', (req, res) => {
-  res.send('<h3>ABC COMPANY API</h3>');
+  res.send('<h3>SSD Secre Server</h3>');
 });
