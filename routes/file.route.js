@@ -1,7 +1,5 @@
 const router = require('express').Router();
 const { uploadFile } = require('../controllers/file.controller');
-const upload = require("../middleware/multer.middleware")
-
 
 const multer = require('multer');
 const {storage} = require('../cloudinary')
