@@ -1,11 +1,7 @@
 const router = require('express').Router();
-const FileController = require('../controllers/file.controller');
-const catchAsync = require('../utils/catchAsync.util');
+const { uploadFile } = require('../controllers/file.controller');
+const upload = require("../middleware/multer.middleware")
 
-const multer = require('multer');
-const {storage} = require('../cloudinary')
-const upload = multer({storage})
-
-router.post('/upload', upload.single('file'), catchAsync(FileController.uploadFile));
+router.post('/upload', upload.single('file'), uploadFile);
 
 module.exports = router;

@@ -15,9 +15,10 @@ const loginAdmin = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ message: 'All Fields Required' });
+      return res.status(400).json({ message: 'Please fill all the fields' });
     }
 
+    try {
       const existingAdmin = await Admin.findOne({
         username: username,
       });
@@ -39,7 +40,10 @@ const loginAdmin = async (req, res) => {
       const token = jwt.sign({ user: existingAdmin._id, role: roles.ADMIN }, process.env.JWT_SECRET);
 
       return res.status(200).json({ token: token, role: roles.ADMIN });
-
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).send();
+    }
   }
 
   return res.status(406).send();

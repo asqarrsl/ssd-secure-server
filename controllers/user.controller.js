@@ -22,33 +22,39 @@ const saveUser = async (req, res) => {
     if (!email.match(pattern)) {
       return res.status(400).json({ message: 'Please enter a valid email address' });
     }
-    const existingUser = await User.findOne({ $or: [{ email }, { username }], role });
-    if (existingUser) {
-      return res.status(400).json({
-        message: 'An account with this email or username is already registered',
+
+    try {
+      const existingUser = await User.findOne({ $or: [{ email }, { username }], role });
+      if (existingUser) {
+        return res.status(400).json({
+          message: 'An account with this email or username is already registered',
+        });
+      }
+
+      let password = generator.generate({
+        length: 6,
+        numbers: true,
       });
+
+      console.log(password);
+
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const newUser = new User({
+        name,
+        email,
+        username,
+        password: hashedPassword,
+        role,
+      });
+      await newUser.save();
+
+      return res.status(201).json({ user: newUser });
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).send();
     }
-
-    let password = generator.generate({
-      length: 6,
-      numbers: true,
-    });
-
-    console.log(password);
-
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const newUser = new User({
-      name,
-      email,
-      username,
-      password: hashedPassword,
-      role,
-    });
-    await newUser.save();
-
-    return res.status(201).json({ user: newUser });
   }
 
   return res.status(400).send();
@@ -61,8 +67,13 @@ const saveUser = async (req, res) => {
  * @returns {Object} res
  */
 const getUsers = async (req, res) => {
-  const users = await User.find({}, { password: 0 });
-  return res.status(200).json({ users: users });
+  try {
+    const users = await User.find({}, { password: 0 });
+    return res.status(200).json({ users: users });
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).send();
+  }
 };
 
 /**
@@ -78,24 +89,30 @@ const loginUser = async (req, res) => {
     if (!username || !password || !role) {
       return res.status(400).json({ message: 'Please fill all the fields' });
     }
-    const existingUser = await User.findOne({ username, role });
-    if (!existingUser) {
-      return res.status(401).json({
-        message: 'Wrong username or password',
-      });
+
+    try {
+      const existingUser = await User.findOne({ username, role });
+      if (!existingUser) {
+        return res.status(401).json({
+          message: 'Wrong username or password',
+        });
+      }
+
+      const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+
+      if (!isPasswordCorrect) {
+        return res.status(401).json({
+          message: 'Wrong username or password',
+        });
+      }
+
+      const token = jwt.sign({ user: existingUser._id, role }, process.env.JWT_SECRET);
+
+      return res.status(200).json({ token, role });
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).send();
     }
-
-    const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
-
-    if (!isPasswordCorrect) {
-      return res.status(401).json({
-        message: 'Wrong username or password',
-      });
-    }
-
-    const token = jwt.sign({ user: existingUser._id, role }, process.env.JWT_SECRET);
-
-    return res.status(200).json({ token, role });
   }
 
   return res.status(406).send();
@@ -109,8 +126,13 @@ const loginUser = async (req, res) => {
  */
 const deleteUser = async (req, res) => {
   if (req.params.id) {
-    await User.findByIdAndDelete(req.params.id);
-    return res.status(200).send();
+    try {
+      await User.findByIdAndDelete(req.params.id);
+      return res.status(200).send();
+    } catch (err) {
+      console.error(err.message);
+      return res.status(500).send();
+    }
   }
 };
 
@@ -122,8 +144,12 @@ const deleteUser = async (req, res) => {
  */
 const getUser = async (req, res) => {
   if (req.params.id) {
-    const User = await User.findById(req.params.id);
-    res.status(200).json({ User: User });
+    try {
+      const User = await User.findById(req.params.id);
+      res.status(200).json({ User: User });
+    } catch (err) {
+      res.status(404).json({ message: err.message });
+    }
   }
 };
 
@@ -135,15 +161,20 @@ const getUser = async (req, res) => {
  */
 const checkLoggedIn = (req, res) => {
   if (req.headers.token) {
-    const token = req.headers.token;
+    try {
+      const token = req.headers.token;
 
-    if (!token) return res.json({ state: false, role: '' });
+      if (!token) return res.json({ state: false, role: '' });
 
-    const verify = jwt.verify(token, process.env.JWT_SECRET);
+      const verify = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (!verify) return res.json({ state: false, role: '' });
+      if (!verify) return res.json({ state: false, role: '' });
 
-    return res.json({ state: true, role: verify.role });
+      return res.json({ state: true, role: verify.role });
+    } catch (err) {
+      console.error(err.message);
+      return res.json({ state: false, role: '' });
+    }
   }
 
   return res.json({ state: false, role: '' });

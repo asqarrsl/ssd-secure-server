@@ -1,18 +1,23 @@
 const router = require('express').Router();
-const MessageController = require('../controllers/message.controller');
-const catchAsync = require('../utils/catchAsync.util');
+const {
+  saveMessage,
+  getAllMessages,
+  getMessgeById,
+  getMessgeByUserId,
+  deleteMessage,
+} = require('../controllers/message.controller');
 
 const { verifyAdminAuth } = require('../middleware/auth.admin.middleware');
 const { verifyManagerAuth } = require('../middleware/auth.manager.middleware');
 const { verifyWorkerAuth } = require('../middleware/auth.worker.middleware');
 
-router.get('/', catchAsync(verifyAdminAuth), catchAsync(MessageController.getAllMessages));
-router.get('/worker/:id', catchAsync(verifyWorkerAuth), catchAsync(MessageController.getMessgeByUserId));
-router.get('/manager/:id', catchAsync(verifyManagerAuth), catchAsync(MessageController.getMessgeByUserId));
-router.get('/worker/get/:id', catchAsync(verifyWorkerAuth), catchAsync(MessageController.getMessgeById));
-router.get('/manager/get/:id', catchAsync(verifyManagerAuth), catchAsync(MessageController.getMessgeById));
-router.post('/worker', catchAsync(verifyWorkerAuth), catchAsync(MessageController.saveMessage));
-router.post('/manager', catchAsync(verifyManagerAuth), catchAsync(MessageController.saveMessage));
-router.delete('/:id', catchAsync(MessageController.deleteMessage));
+router.get('/', verifyAdminAuth, getAllMessages);
+router.get('/worker/:id', verifyWorkerAuth, getMessgeByUserId);
+router.get('/manager/:id', verifyManagerAuth, getMessgeByUserId);
+router.get('/worker/get/:id', verifyWorkerAuth, getMessgeById);
+router.get('/manager/get/:id', verifyManagerAuth, getMessgeById);
+router.post('/worker', verifyWorkerAuth, saveMessage);
+router.post('/manager', verifyManagerAuth, saveMessage);
+router.delete('/:id', deleteMessage);
 
 module.exports = router;

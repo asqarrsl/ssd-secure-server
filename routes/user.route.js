@@ -1,13 +1,12 @@
 const router = require('express').Router();
-const UserController = require('../controllers/user.controller');
-const catchAsync = require('../utils/catchAsync.util');
+const { saveUser, getUsers, loginUser, deleteUser, getUser, checkLoggedIn } = require('../controllers/user.controller');
 const { verifyAdminAuth } = require('../middleware/auth.admin.middleware');
 
-router.get('/', catchAsync(verifyAdminAuth), catchAsync(UserController.getUsers));
-router.post('/register', catchAsync(verifyAdminAuth), catchAsync(UserController.saveUser));
-router.post('/login', catchAsync(UserController.loginUser));
-router.get('/logged', catchAsync(UserController.checkLoggedIn));
-router.get('/:id', catchAsync(verifyAdminAuth), catchAsync(UserController.getUser));
-router.delete('/:id', catchAsync(verifyAdminAuth), catchAsync(UserController.deleteUser));
+router.get('/', verifyAdminAuth, getUsers);
+router.post('/register', verifyAdminAuth, saveUser);
+router.post('/login', loginUser);
+router.get('/logged', checkLoggedIn);
+router.get('/:id', verifyAdminAuth, getUser);
+router.delete('/:id', verifyAdminAuth, deleteUser);
 
 module.exports = router;

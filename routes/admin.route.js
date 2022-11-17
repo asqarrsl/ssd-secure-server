@@ -1,7 +1,6 @@
 const router = require('express').Router();
-const AdminController = require('../controllers/admin.controller');
-const catchAsync = require('../utils/catchAsync.util');
+const { loginAdmin } = require('../controllers/admin.controller');
 
-router.post('/login', catchAsync(AdminController.loginAdmin));
+router.post('/login', loginAdmin);
 
 module.exports = router;
