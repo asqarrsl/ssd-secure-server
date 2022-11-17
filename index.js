@@ -15,13 +15,13 @@ dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const sslServer = https.createServer(
-  {
-    key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem')),
-  },
-  app
-);
+// const sslServer = https.createServer(
+//   {
+//     key: fs.readFileSync(path.join(__dirname, 'cert', 'key.pem')),
+//     cert: fs.readFileSync(path.join(__dirname, 'cert', 'cert.pem')),
+//   },
+//   app
+// );
 
 mongoose
   .connect(process.env.CONNECTION_URL, {
@@ -29,7 +29,7 @@ mongoose
     useNewUrlParser: true,
   })
   .then(() => {
-    sslServer.listen(PORT, () => console.log(`Secure server listening on port ${PORT}`));
+    // sslServer.listen(PORT, () => console.log(`Secure server listening on port ${PORT}`));
   })
   .catch((err) => {
     console.error(err.message);
