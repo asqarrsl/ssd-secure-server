@@ -4,8 +4,8 @@ describe('POST @ /admin/login endpoint', () => {
   it('should login an admin', async () => {
     try {
       const res = axios.post('http://localhost:5000/admin/login', {
-        username: 'thiwanka',
-        password: 'thiwanka',
+        username: 'admin',
+        password: 'admin',
       });
 
       expect(res.status).toEqual(200);

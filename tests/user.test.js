@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 describe('GET @ /users endpoint', () => {
   it('should return an users array and return status code 200', async () => {
     try {
@@ -22,9 +24,9 @@ describe('POST @ /user/register endpoint', () => {
       const res = axios.post(
         'http://localhost:5000/user/register',
         {
-          name: 'Thushara Thiwanka',
-          username: 'thushara',
-          email: 'thushara@gmail.com',
+          name: 'Worker',
+          username: 'worker',
+          email: 'worker@gmail.com',
           role: 'worker',
         },
         {
@@ -48,9 +50,9 @@ describe('POST @ /user/register endpoint', () => {
       const res = axios.post(
         'http://localhost:5000/user/register',
         {
-          name: 'Thushara Thiwanka',
-          username: 'thushara',
-          email: 'thushara@gmail.com',
+          name: 'manager',
+          username: 'manager',
+          email: 'manager@gmail.com',
           role: 'manager',
         },
         {
