@@ -29,7 +29,7 @@ mongoose
     useNewUrlParser: true,
   })
   .then(() => {
-    sslServer.listen(PORT, () => console.log(`Secure server listening on port ${PORT}`));
+    // sslServer.listen(PORT, () => console.log(`Secure server listening on port ${PORT}`));
     // console.log(`Secure server listening on port ${PORT}`)
   })
   .catch((err) => {
@@ -45,6 +45,6 @@ app.get('/', (req, res) => {
   res.send('<h3>SSD Secre Server</h3>');
 });
 
-app.listen(PORT+1,()=>{
+app.listen(PORT,()=>{
   console.log('Serving on port `${PORT}`!');
 })
