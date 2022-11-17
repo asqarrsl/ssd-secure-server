@@ -10,8 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 dotenv.config();
 
-// app.use(cors({ origin: ['http://localhost:3000', 'https://abc-company-client.vercel.app'], credentials: true }));
-app.use(cors());
+app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -29,8 +28,7 @@ mongoose
     useNewUrlParser: true,
   })
   .then(() => {
-    // sslServer.listen(PORT, () => console.log(`Secure server listening on port ${PORT}`));
-    // console.log(`Secure server listening on port ${PORT}`)
+    sslServer.listen(PORT, () => console.log(`Secure server listening on port ${PORT}`));
   })
   .catch((err) => {
     console.error(err.message);
@@ -44,7 +42,3 @@ app.use('/file', require('./routes/file.route'));
 app.get('/', (req, res) => {
   res.send('<h3>SSD Secre Server</h3>');
 });
-
-app.listen(PORT,()=>{
-  console.log('Serving on port `${PORT}`!');
-})
